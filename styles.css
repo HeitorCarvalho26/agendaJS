@@ -1,0 +1,212 @@
+:root{
+  --bg-1: #0b0f14;
+  --bg-2: #0f1e2e;
+  --card: #12273c;
+  --text: #eaf2ff;
+  --muted: #a9bdd8;
+  --accent: #1f6feb;
+  --accent-2: #48c0e3;
+  --danger: #dc3545;
+  --success: #2ea043;
+  --shadow: rgba(0,0,0,0.35);
+}
+
+*{ box-sizing: border-box; }
+
+html, body{
+  height: 100%;
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 600px at 20% -20%, rgba(72,192,227,0.12), transparent 60%),
+    linear-gradient(180deg, var(--bg-2), var(--bg-1));
+}
+
+.app{
+  min-height: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 20px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* centraliza conteúdo */
+  text-align: center;        /* centraliza texto */
+}
+
+.app__header{
+  margin-bottom: 24px;
+}
+
+.app__title{
+  margin: 0 0 8px;
+  font-size: 2.25rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-shadow: 0 6px 20px var(--shadow);
+}
+
+.app__subtitle{
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.input-bar{
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 180px 180px;
+  gap: 12px;
+  background: rgba(18,39,60,0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 14px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 12px 24px var(--shadow);
+  margin-top: 20px;
+}
+
+.input{
+  width: 100%;
+  height: 44px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #0e1e30;
+  color: var(--text);
+  border-radius: 12px;
+  padding: 0 12px;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.input::placeholder{ color: #89a2c0; }
+
+.input:focus{
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 3px rgba(72,192,227,0.2);
+}
+
+.btn{
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 0 16px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  background: var(--card);
+  color: var(--text);
+  transition: transform 80ms ease, filter 160ms ease, background 160ms ease;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 8px 16px var(--shadow);
+}
+
+.btn:hover{ filter: brightness(1.05); }
+.btn:active{ transform: translateY(1px); }
+
+.btn--primary{
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  color: #06101a;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+}
+
+.btn--danger{ background: linear-gradient(180deg, #ff6b7d, var(--danger)); }
+.btn--success{ background: linear-gradient(180deg, #6ee7a0, var(--success)); }
+
+.lista{
+  width: 100%;
+  margin-top: 28px;
+  display: grid;
+  gap: 12px;
+}
+
+.lista__vazio{
+  color: var(--muted);
+  background: rgba(18,39,60,0.5);
+  border: 1px dashed rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 18px 14px;
+}
+
+.item{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(180deg, #0e1e30, #0c1725);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 18px var(--shadow);
+}
+
+.item__info{
+  text-align: left;                  
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item__nome{
+  font-weight: 700;
+  font-size: 1.02rem;
+}
+
+.item__data{
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.item__acoes{
+  display: flex;
+  gap: 8px;
+}
+
+.item--concluida{
+  opacity: 0.85;
+  background: linear-gradient(180deg, #0b1a2a, #0a1622);
+  border-color: rgba(72,192,227,0.25);
+}
+
+.item--concluida .item__nome{
+  text-decoration: line-through;
+  color: #9bb8d8;
+}
+
+@media (max-width: 720px){
+  .input-bar{
+    grid-template-columns: 1fr 1fr;
+  }
+  #btn-adicionar{
+    grid-column: 1 / -1;
+  }
+}
+
+.item--concluida .item__nome{
+  text-decoration: line-through;
+  color: #2ea043; 
+}
+
+.item--concluida .item__nome::after{
+  content: " ✓";
+  font-weight: bold;
+  margin-left: 6px;
+  color: #2ea043;
+}
+
+.input-date {
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #1a1a2e;     
+  color: var(--text);       
+  padding: 0 12px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.input-date::-webkit-calendar-picker-indicator {
+  filter: invert(1);        
+}
+
+.input-date:focus {
+  border-color: var(--accent-2);
+}

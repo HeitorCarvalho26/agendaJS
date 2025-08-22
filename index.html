@@ -1,104 +1,145 @@
- 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agenda</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <input id="tarefa" type="text" placeholder="Insira aqui sua tarefa"></input>
-    <input id="seleciona-data" type="date"  />
-    <button onclick="adicionarTarefa()">Adicionar Tarefa</button>
-    <div id="lista-de-tarefas"></div>
+    <main class="app">
+        <header class="app__header">
+            <h1 class="app__title">Agenda</h1>
+            <p class="app__subtitle">Organize suas tarefas de forma simples.</p>
+        </header>
+
+        <section class="input-bar">
+            <input id="tarefa" class="input" type="text" placeholder="Insira aqui sua tarefa">
+            <input id="seleciona-data" type="date" class="input-date" />
+            <button id="btn-adicionar" class="btn btn--primary">Adicionar Tarefa.</button>
+        </section>
+
+        <section id="lista-de-tarefas" class="lista"></section>
+    </main>
+
+    <template id="item-template">
+        <div class="item">
+            <div class="item__info">
+                <span class="item__nome"></span>
+                <span class="item__data"></span>
+            </div>
+            <div class="item__acoes">
+                <button class="btn btn--success btn-concluir">Concluir</button>
+                <button class="btn btn--danger btn-apagar">Apagar</button>
+            </div>
+        </div>
+    </template>
+
     <script>
-        //MVC -> Modelagem, Visualzção e Conteolw
-        //Seção de Modelagem (De Dados)
-        let afazeres
-        const afazeresSalvos = JSON.parse(localStorage.getItem('afazeres'))
-        if(Array.isArray(afazeresSalvos)){
-            afazeres = afazeresSalvos;
- 
-        }else{
-            afazeres = [ //Coleção de Objetos javascript
-            //{
-                //nome: "Lavar a louça",
-                //data: "15-08-2025",
-                //id: "id1"
-            //}
-        ];
-        }
-       
-        //Salva as tarefas no navegadordepois de converter o array em string
-        const salvarTarefas = () => localStorage.setItem("afazeres", JSON.stringify(afazeres));
-        //console.log(JSON.stringify(afazeres));
-        salvarTarefas();
- 
- 
-        //Seção de Visualização
- 
-        const renderizar = () =>{
-            document.getElementById('lista-de-tarefas').innerHTML = " ";
-            afazeres.forEach(
-                (tarefa) => {
-                 const elemento = document.createElement('div');
-                 elemento.innerHTML = tarefa.nome + " " + tarefa.data
- 
-                 const botaoApagar = document.createElement('button');
-                 botaoApagar.innerText = 'Apagar';
-                 botaoApagar.id = tarefa.id
-                 botaoApagar.onclick = apagarTarefa;
-                 elemento.appendChild( botaoApagar);
- 
-     
-                 const listaDeTarefas = document.getElementById('lista-de-tarefas');
-                 listaDeTarefas.appendChild( elemento );
-                 
-                }
-            );
-        }
- 
- 
-        //Seção de Controle
- 
-        const adicionarTarefa = () => {
-            const campoTarefa = document.getElementById('tarefa');
-            const tarefa = campoTarefa.value;
- 
-            const campoData = document.getElementById('seleciona-data');
-            const prazo = campoData.value;
- 
-            const cron = " " + new Date().getTime();
- 
-            afazeres.push(
-                {
-                    nome: tarefa,
-                    data: prazo,
-                    id: cron
-                }
-            )
-            salvarTarefas();
-            renderizar();
-        }
- 
-        const apagarTarefa =(evento) => {
-            const botaoApagar = evento.target;
-            const idASerApagado = botaoApagar.id;
-            afazeres = afazeres.filter((tarefa)=>{
-                if( tarefa.id === idASerApagado ){
-                    return false;
-                }else{
-                    return true;
-                }
-            });
-            renderizar();
-            salvarTarefas();
+
+        let afazeres = [];
+        const STORAGE_KEY = "afazeres";
+
+        const carregar = () => {
+            const salvo = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            afazeres = Array.isArray(salvo) ? salvo : [];
         };
- 
- 
-       
-        renderizar();
+
+        const salvar = () => {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(afazeres));
+        };
+
+
+        const formatarDataDDMMYYYY = (valorISO) => {
+            if (!valorISO) return "";
+            const [yyyy, mm, dd] = valorISO.split("-");
+            return `${dd}/${mm}/${yyyy}`;
+        };
+
+        const gerarId = () => String(Date.now());
+
+        const listaEl = document.getElementById("lista-de-tarefas");
+        const template = document.getElementById("item-template");
+
+        const desenhar = () => {
+            listaEl.innerHTML = "";
+            if (afazeres.length === 0) {
+                const vazio = document.createElement("p");
+                vazio.className = "lista__vazio";
+                vazio.textContent = "Nenhuma tarefa por enquanto.";
+                listaEl.appendChild(vazio);
+                return;
+            }
+
+            afazeres.forEach((t) => {
+                const clone = template.content.cloneNode(true);
+                const root = clone.querySelector(".item");
+                const nome = clone.querySelector(".item__nome");
+                const data = clone.querySelector(".item__data");
+                const btnConcluir = clone.querySelector(".btn-concluir");
+                const btnApagar = clone.querySelector(".btn-apagar");
+
+                nome.textContent = t.nome || "(sem título)";
+                data.textContent = formatarDataDDMMYYYY(t.data);
+
+                if (t.concluida) {
+                    root.classList.add("item--concluida");
+                    btnConcluir.textContent = "Desfazer";
+                }
+
+                btnConcluir.addEventListener("click", () => {
+                    t.concluida = !t.concluida;
+                    salvar();
+                    desenhar();
+                });
+
+                btnApagar.addEventListener("click", () => {
+                    afazeres = afazeres.filter((x) => x.id !== t.id);
+                    salvar();
+                    desenhar();
+                });
+
+                listaEl.appendChild(clone);
+            });
+        };
+
+        const campoTarefa = document.getElementById("tarefa");
+        const campoData = document.getElementById("seleciona-data");
+        const btnAdicionar = document.getElementById("btn-adicionar");
+
+        const adicionarTarefa = () => {
+            const nome = (campoTarefa.value || "").trim();
+            const data = campoData.value;
+
+            if (!nome) {
+                campoTarefa.focus();
+                return;
+            }
+
+            afazeres.push({
+                id: gerarId(),
+                nome,
+                data,
+                concluida: false
+            });
+
+            salvar();
+            desenhar();
+            campoTarefa.value = "";
+            campoTarefa.focus();
+        };
+
+        btnAdicionar.addEventListener("click", adicionarTarefa);
+
+        campoTarefa.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") adicionarTarefa();
+        });
+
+        carregar();
+        desenhar();
     </script>
 </body>
+
 </html>
- 
